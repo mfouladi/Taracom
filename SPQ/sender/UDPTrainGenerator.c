@@ -177,7 +177,7 @@ error_t UDPTrainGenerator (int initial_train_length, int seperation_train_length
       remaining_packet_seq_id++;
       *((int*) packet_data_remaining) = remaining_packet_seq_id;
 
-      num_packets_sent++;
+      num_packets_sent++;  
     }
     num_trains_sent++;
   }
