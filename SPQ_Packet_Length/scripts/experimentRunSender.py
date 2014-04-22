@@ -23,6 +23,9 @@ config.readfp(open(experiment_config_file_name))
 num_of_packets = config.getint('DEFAULT', 'num_of_packets') #receive from config file
 probe_packet_length = config.getint('DEFAULT', 'probe_packet_length') #receive from config file
 compression_node_addr = config.get('DEFAULT', 'compression_node_addr') #receive from config file
+priority = config.get('DEFAULT', 'priority') #receive from config file
+high_prioirty_packet_length  = config.get('DEFAULT', 'additional_packet_length') #receive from config file
+
 
 #udp_session_timeout = config.getint('DEFAULT', 'udp_session_timeout') #receive from config file
 #inter_packet_departure_spacing = config.getint('DEFAULT', 'inter_packet_departure_spacing') #receive from config file
@@ -37,8 +40,6 @@ experiment_scenario_id = config.getint('DEFAULT', 'experiment_scenario_id') #rec
 current_time = datetime.datetime.now() #formatted time from python
 current_timestamp_string = current_time.strftime("%Y-%m-%d--%H-%M")
 
-# Run for low entropy
-entropy = 'H'
 #results_data_file = results_data_file_path + current_timestamp_string + str(experiment_scenario_id) + '_L.dat'
 log_data_file = log_file_path + current_timestamp_string + str(experiment_scenario_id) + '_L.log'
 
@@ -46,7 +47,7 @@ log_data_file = log_file_path + current_timestamp_string + str(experiment_scenar
 log_file = open(log_data_file, 'w+')
 
 #arguments to be given to subprocess
-args = ["./unitExperimentSender",num_of_packets,probe_packet_length, compression_node_addr, entropy]
+args = ["./unitExperimentSender",num_of_packets,probe_packet_length, high_prioirty_packet_length, compression_node_addr, priority]
 str_args = [ str(x) for x in args ] #convert args to string
 
 # Execute the following command in terminal
@@ -58,37 +59,3 @@ log_file.write(repr(stdout_value))
 log_file.write(repr(stderr_value))
 log_file.write(str(runExperiment.returncode))
 log_file.close()
-
-
-# Wait 1 minute after first unitExperiment is done
-time.sleep(inter_experiment_sleep_time)
-
-#reset time stamp
-#current_time = datetime.datetime.now() #formatted time from python
-#current_timestamp_string = current_time.strftime("%Y-%m-%d::%H:%M")
-
-# Run for high entropy
-entropy = 'L'
-#results_data_file = results_data_file_path + current_timestamp_string+ str(experiment_scenario_id) + '_H.dat'
-log_data_file = log_file_path + current_timestamp_string + str(experiment_scenario_id) + '_H.log'
-
-#open log file to write to
-log_file = open(log_data_file, 'w+')
-
-#arguments to be given to subprocess
-args = ["./unitExperimentSender",num_of_packets,probe_packet_length, compression_node_addr, entropy]
-str_args = [ str(x) for x in args ] #convert args to string
-
-# Execute the following command in terminal
-#./unitExperimentSender num_of_packets inter_packet_departure_spacing probe_packet_length "results_data_file" "dest_addr" "compression_node_addr" timeout 'H' > log_data_file
-runExperiment = subprocess.Popen(str_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-stdout_value, stderr_value = runExperiment.communicate('through stdin to stdout')
-log_file.write(repr(stdout_value))
-log_file.write(repr(stderr_value))
-log_file.write(str(runExperiment.returncode))
-log_file.close()
-
-
-meta_data_file = current_timestamp_string + str(experiment_scenario_id) +'.meta'
-
