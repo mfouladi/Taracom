@@ -1,0 +1,6 @@
+1) send initial packets of high priority
+	- initial_train_length
+2) if Low Priority, send one high priority and then separation_train_length of low priority
+	- seperation_train_length
+   else if high priority, send one low priority and then separation_trainlength of high priority
+   
