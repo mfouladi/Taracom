@@ -20,7 +20,9 @@ config = ConfigParser.RawConfigParser()
 config.readfp(open(experiment_config_file_name))
 
 #Read Experiment Run Values from Config File
-num_of_packets = config.getint('DEFAULT', 'num_of_packets') #receive from config file
+initial_num_of_packets = config.getint('DEFAULT', 'initial_num_of_packets') #receive from config file
+seperation_train_length = config.getint('DEFAULT', 'seperation_train_length') #receive from config file
+num_packet_trains = config.getint('DEFAULT', 'num_packet_trains') #receive from config file
 probe_packet_length = config.getint('DEFAULT', 'probe_packet_length') #receive from config file
 compression_node_addr = config.get('DEFAULT', 'compression_node_addr') #receive from config file
 
@@ -46,7 +48,7 @@ log_data_file = log_file_path + current_timestamp_string + str(experiment_scenar
 log_file = open(log_data_file, 'w+')
 
 #arguments to be given to subprocess
-args = ["./unitExperimentSender",num_of_packets,probe_packet_length, compression_node_addr, entropy]
+args = ["./unitExperimentSender",initial_num_of_packets, seperation_train_length, num_packet_trains, probe_packet_length, compression_node_addr, entropy]
 str_args = [ str(x) for x in args ] #convert args to string
 
 # Execute the following command in terminal
@@ -76,7 +78,7 @@ log_data_file = log_file_path + current_timestamp_string + str(experiment_scenar
 log_file = open(log_data_file, 'w+')
 
 #arguments to be given to subprocess
-args = ["./unitExperimentSender",num_of_packets,probe_packet_length, compression_node_addr, entropy]
+args = ["./unitExperimentSender",initial_num_of_packets, seperation_train_length, num_packet_trains, probe_packet_length, compression_node_addr, entropy]
 str_args = [ str(x) for x in args ] #convert args to string
 
 # Execute the following command in terminal

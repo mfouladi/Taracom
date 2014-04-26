@@ -17,7 +17,7 @@
 **    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 **
 ** How To Run Code:
-** ./unitExperimentSender num_of_packets probe_payload_length high_priority_address low_priority_address priority
+** ./unitExperimentSender num_of_packets probe_payload_length receiver_address receiver_address priority
 ** Example: ./sender 60000 1500 127.0.0.1 127.0.0.2 H
 ********************************************************************/
 #include <stdio.h>
@@ -25,6 +25,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netinet/ip.h>
 #include <unistd.h>
 #include <netdb.h>
 #include <time.h>
@@ -54,7 +55,7 @@ struct timespec diff(struct timespec start, struct timespec end)
  * the compression node address. 
  ***************************************************************/
 error_t UDPTrainGenerator (int initial_train_length, int seperation_train_length, int num_packet_trains, 
-  int probe_payload_length, char* high_priority_address, char* low_priority_address, char priority)
+  int probe_payload_length, char* receiver_address, char priority)
 {
   // Set up high priority send_socket
   struct addrinfo hints_hi;
@@ -64,7 +65,7 @@ error_t UDPTrainGenerator (int initial_train_length, int seperation_train_length
 
   //Fill data structure with address and port number of high priority destination
   struct addrinfo* dest_addr_info_hi;
-  int status = getaddrinfo(high_priority_address, UDP_PROBE_PORT_NUMBER, &hints_hi, &dest_addr_info_hi);
+  int status = getaddrinfo(receiver_address, UDP_PROBE_PORT_NUMBER, &hints_hi, &dest_addr_info_hi);
   if (status != 0)
   {
     fprintf(stderr, "ERROR #%d: Address Information Error\n", ADDRINFO_ERROR);
@@ -79,7 +80,7 @@ error_t UDPTrainGenerator (int initial_train_length, int seperation_train_length
 
   //Fill data structure with address and port number of low priority destination
   struct addrinfo* dest_addr_info_low;
-  status = getaddrinfo(low_priority_address, UDP_PROBE_PORT_NUMBER, &hints_low, &dest_addr_info_low);
+  status = getaddrinfo(receiver_address, UDP_PROBE_PORT_NUMBER, &hints_low, &dest_addr_info_low);
   if (status != 0)
   {
     fprintf(stderr, "ERROR #%d: Address Information Error\n", ADDRINFO_ERROR);
@@ -93,6 +94,14 @@ error_t UDPTrainGenerator (int initial_train_length, int seperation_train_length
     fprintf(stderr, "ERROR #%d: Socket Setup Error\n", SOCKET_SETUP_ERROR);
     return SOCKET_SETUP_ERROR;
   }
+
+  //Set IP TOS to low delay
+  int lowdelay = IPTOS_LOWDELAY;
+  if (setsockopt(send_socket_hi, IPPROTO_IP, IP_TOS, (void *)&lowdelay, sizeof(lowdelay)) < 0){
+    fprintf(stderr, "ERROR #%d: Socket TOS Error\n", SOCKET_SETUP_ERROR);
+    return SOCKET_SETUP_ERROR;
+  }
+
 
   //Set up socket to send packets to host with udp for low priority packets
   int send_socket_low = socket(dest_addr_info_low->ai_family, dest_addr_info_low->ai_socktype, dest_addr_info_low->ai_protocol);
@@ -199,23 +208,22 @@ int main(int argc, char *argv[])
 {
 
   //Sender takes in 5 arguments
-  //./unitExperimentSender num_of_packets probe_payload_length high_priority_address low_priority_address priority
-  if(argc != 8)
+  //./unitExperimentSender num_of_packets probe_payload_length receiver_address receiver_address priority
+  if(argc != 7)
   {
     fprintf(stderr,"ERROR #%d: INVALID NUMBER OF ARGUMENTS\n", INVALID_NUMBER_OF_ARGUMENTS);
-    fprintf(stderr, "Usage: ./unitExperimentSender initial_train_length seperation_train_length num_packet_trains probe_payload_length high_priority_address low_priority_address priority\n");
+    fprintf(stderr, "Usage: ./unitExperimentSender initial_train_length seperation_train_length num_packet_trains probe_payload_length receiver_address priority\n");
     return INVALID_NUMBER_OF_ARGUMENTS;
   }
   int initial_train_length = atoi(argv[1]); //Number of Initial High Priority Packets
   int seperation_train_length = atoi(argv[2]); //Number of Packets Per Train
   int num_packet_trains = atoi(argv[3]); //Number of Packet Trains
   int probe_payload_length = atoi(argv[4]); //[0,1500] in bytes
-  char* high_priority_address = argv[5]; //ip address of compression node X??.X??.X??.X??   TODO? must be IPv4 address?
-  char* low_priority_address = argv[6];
-  char* priority = argv[7];//priority either 'H' or 'L'
+  char* receiver_address = argv[5]; //ip address of compression node X??.X??.X??.X??   TODO? must be IPv4 address?
+  char* priority = argv[6];//priority either 'H' or 'L'
 
   /*Call UDP Connection to Send Data to Receiver*/
-  if(UDPTrainGenerator(initial_train_length, seperation_train_length, num_packet_trains, probe_payload_length, high_priority_address, low_priority_address, priority[0]) != SUCCESS)
+  if(UDPTrainGenerator(initial_train_length, seperation_train_length, num_packet_trains, probe_payload_length, receiver_address, priority[0]) != SUCCESS)
   {
     fprintf(stderr, "ERROR #%d: UDP Train Generator Error\n", UDP_TRAIN_GENERATOR_FAILED);
     return UDP_TRAIN_GENERATOR_FAILED;
