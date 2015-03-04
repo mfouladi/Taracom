@@ -129,7 +129,7 @@ error_t UDPTrainReceiver (char* buffer, int probe_packet_length, unsigned long i
 
 	//Deliminator used to separate experiments in the output file
 	const char delim[4] = "*\n";
-	//int delim_size = strlen(delim);
+	int delim_size = strlen(delim);
 
 	//Output file name extension
 	const char extension[5] = ".raw";
@@ -343,13 +343,15 @@ int main(int argc, char *argv[])
 
   if(argc != 3){
     fprintf(stderr,"ERROR #%d: INVALID NUMBER OF ARGUMENTS\n", INVALID_NUMBER_OF_ARGUMENTS);
-    fprintf(stderr, "Usage: ./receiver experiment_run_time probe_packet_length\n"); 
+    fprintf(stderr, "Usage: ./receiver experiment_run_time probe_packet_length inter_experiment_sleep_time\n"); 
     return INVALID_NUMBER_OF_ARGUMENTS;
   }
   
   unsigned long initial_experiment_run_time = atoi(argv[1]);
 
   int probe_packet_length = atoi(argv[2]);
+
+  unsigned long inter_experiment_sleep_time = atoi(argv[3]);
 
   //int                num_of_packets;  //TODO should be an argument?
 
@@ -361,7 +363,8 @@ int main(int argc, char *argv[])
     send_buffer[i] = 0;
   }
 
-  if(UDPTrainReceiver(send_buffer, probe_packet_length, initial_experiment_run_time,  later_experiment_run_time)!= 0)
+  if(UDPTrainReceiver(send_buffer, probe_packet_length, initial_experiment_run_time,  
+  	later_experiment_run_time, inter_experiment_sleep_time)!= 0)
   {
     fprintf(stderr, "ERROR #%d: UDP Train Receiver Error", UDP_TRAIN_RECEIVER_FAILED);
     return UDP_TRAIN_RECEIVER_FAILED;                    

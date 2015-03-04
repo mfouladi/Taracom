@@ -117,7 +117,7 @@ error_t UDPTrainGenerator (int initial_train_length, int seperation_train_length
   }
 
   //Send prioritized packet trains based on prioirty parameter
-  int zero_tos = 0;
+  //int zero_tos = 0;
   if( priority == 'L'){
     int num_trains_sent = 0;
     while(num_trains_sent < num_packet_trains){

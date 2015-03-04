@@ -75,6 +75,7 @@ config.readfp(config_file)
 probe_packet_length = config.getint('DEFAULT', 'probe_packet_length') #receive from config file
 udp_session_timeout = config.getint('DEFAULT', 'udp_session_timeout') #receive from config file
 num_of_packets = config.getint('DEFAULT', 'num_of_packets') #receive from config file
+inter_experiment_sleep_time = config.getint('DEFAULT', 'inter_experiment_sleep_time') #receive from config file
 
 log_file_path = config.get('DEFAULT', 'log_file_path') #receive from config file
 raw_results_file_path = config.get('DEFAULT', 'raw_results_file_path') #receive from config file
@@ -96,7 +97,7 @@ current_timestamp_string = current_time.strftime("%Y-%m-%d--%H-%M")
 #arguments to be given to subprocess
 #args = ["./unitExperimentReceiver",probe_packet_length, udp_session_timeout]
 #str_args = [ str(x) for x in args ] #convert args to string
-args = "./unitExperimentReceiver " + str(udp_session_timeout)  + ' '  + str(probe_packet_length)
+args = "./unitExperimentReceiver " + str(udp_session_timeout)  + ' '  + str(probe_packet_length) + ' ' + str(inter_experiment_sleep_time) 
 
 # Run receiver
 # Execute the following command in terminal
