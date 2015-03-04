@@ -26,7 +26,7 @@ def refine_live_experiment_outputfile(filename, number_of_packets, refined_resul
     # Extract the pure filename (no extension) for writing purposes
     fname = os.path.splitext(filename)[0]
     fname = fname.split('/')[1]
-    outputA = open(refined_results_file_path+fname + "_A.dat", 'w') # Open the "_A.dat" file
+    outputA = open(refined_results_file_path+fname + "_L.dat", 'w') # Open the "_A.dat" file
 
     ###################################
     # If asterisk, split into two files
@@ -34,7 +34,7 @@ def refine_live_experiment_outputfile(filename, number_of_packets, refined_resul
     splitchar = "*\n"
     # If the file contains an asterisk, split into A and B lists
     if splitchar in data:
-        outputB = open(refined_results_file_path+fname + "_B.dat", 'w') # We'll need to also open a "_B.dat" file
+        outputB = open(refined_results_file_path+fname + "_H.dat", 'w') # We'll need to also open a "_B.dat" file
         s_index = data.index(splitchar)
         # Go up until the asterisk...
         for i in range(0, s_index):

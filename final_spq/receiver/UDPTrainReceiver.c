@@ -59,7 +59,8 @@ void handle_shutdown(int sig)
 
 }
 
-error_t UDPTrainReceiver (char* buffer, int probe_packet_length, unsigned long initial_experiment_run_time, unsigned long later_experiment_run_time)
+error_t UDPTrainReceiver (char* buffer, int probe_packet_length, unsigned long initial_experiment_run_time, 
+	unsigned long later_experiment_run_time, unsigned long inter_experiment_sleep_time)
 {
 	
 	//Not sure what this does exactly
@@ -318,6 +319,17 @@ error_t UDPTrainReceiver (char* buffer, int probe_packet_length, unsigned long i
 			return SUCCESS;
 
 		}
+		else if (diff(lastWrite, currentTime).tv_sec >=  inter_experiment_sleep_time) 
+		{
+
+			//increase the inter_experiment_sleep_time so that it is much longer than experiment run time
+			//because we dont want this if statment to be hit again
+			inter_experiment_sleep_time = experiment_run_time + experiment_run_time;
+			//Write the delimiter to the buffer and increment buffer by size of delim
+			memcpy ((void*) (buffer + buf_len), (void*) delim, delim_size);
+			buf_len += delim_size;
+
+		}   
 
     }
 
