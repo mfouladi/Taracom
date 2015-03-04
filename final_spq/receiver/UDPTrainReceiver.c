@@ -341,7 +341,7 @@ char send_buffer[MAX_SEND_BUFFER_SIZE]; //Hardcoded based on max number of probe
 int main(int argc, char *argv[])
 {
 
-  if(argc != 3){
+  if(argc != 4){
     fprintf(stderr,"ERROR #%d: INVALID NUMBER OF ARGUMENTS\n", INVALID_NUMBER_OF_ARGUMENTS);
     fprintf(stderr, "Usage: ./receiver experiment_run_time probe_packet_length inter_experiment_sleep_time\n"); 
     return INVALID_NUMBER_OF_ARGUMENTS;
